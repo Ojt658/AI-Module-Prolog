@@ -1,0 +1,26 @@
+nextTo(aberystwyth, [borth, machynlleth]).
+nextTo(borth, [porthmadog]).
+nextTo(machynlleth, [shrewsbury]).
+nextTo(shrewsbury, [chester,witchurch,wolverhampton]).
+nextTo(chester, [crewe, manchester]).
+nextTo(witchurch, [crewe]).
+nextTo(crewe, [chester,manchester]).
+nextTo(wolverhampton, [birmingham]).
+nextTo(birmingham, [oxford, derby]).
+nextTo(oxford, [london]).
+
+replacement(machynlleth).
+replacement(crewe).
+flooded(machynlleth).
+flooded(crewe).
+flooded(chester).
+
+connected(D,[D|_]).
+connected(D,[_|Tail]) :- connected(D, Tail),!. /*Cut used to stop the program after it is found */
+
+notBlocked(S,D) :- not(flooded(S)), not(flooded(D)),!.  /*Cut used to stop overwritting if unneeded */
+notBlocked(S,D) :- replacement(S) ; replacement(D). /* Route available if there is a replacement service in either town */
+canTravel(S,D) :- nextTo(S,L), connected(D,L), notBlocked(S,D).
+
+canBeReached(S, D) :- canTravel(S, D),!.  /*Cut used to stop the program after one route is found */
+canBeReached(S, D) :- canTravel(S, I), canBeReached(I, D),!.
